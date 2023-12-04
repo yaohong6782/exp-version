@@ -1,0 +1,177 @@
+my-api/
+├── app/
+│   ├── controllers/
+│   │   ├── userController.js
+│   │   ├── postController.js
+│   │   └── ...
+│   ├── routes/
+│   │   ├── userRoutes.js
+│   │   ├── postRoutes.js
+│   │   └── ...
+│   └── middlewares/
+│       ├── authMiddleware.js
+│       ├── validationMiddleware.js
+│       └── ...
+├── config/
+│   ├── env.js
+│   └── ...
+├── public/
+│   ├── images/
+│   ├── styles/
+│   └── ...
+├── tests/
+├── utils/
+├── .gitignore
+├── app.js (or index.js)
+├── package.json
+└── README.md
+
+
+# Controller 
+
+// app/controllers/userController.js
+const User = require('../models/user'); // If you decide to use a model later
+const bcrypt = require('bcrypt');
+
+// Controller function to handle user registration
+exports.registerUser = async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+
+    // Hash the password before saving it (you might want to use a library like bcrypt)
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create a new user (assuming you have a User model)
+    const newUser = new User({
+      username,
+      email,
+      password: hashedPassword,
+    });
+
+    // Save the user to the database (you can customize this part based on your database choice)
+    // await newUser.save();
+
+    res.status(201).json({ message: 'User registered successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred while registering the user' });
+  }
+};
+
+
+
+# Routes 
+
+// app/routes/userRoutes.js
+const express = require('express');
+const router = express.Router();
+const userController = require('../controllers/userController');
+
+// Define a route for user registration
+router.post('/register', userController.registerUser);
+
+module.exports = router;
+
+
+# MiddleWare 
+
+// app/middlewares/authMiddleware.js
+const jwt = require('jsonwebtoken');
+
+// Middleware function to authenticate requests
+exports.authenticate = (req, res, next) => {
+  const token = req.header('Authorization');
+
+  if (!token) {
+    return res.status(401).json({ error: 'Authentication failed. No token provided.' });
+  }
+
+  // Verify the token (you would typically use a secret key)
+  jwt.verify(token, 'your-secret-key', (error, decoded) => {
+    if (error) {
+      return res.status(403).json({ error: 'Authentication failed. Invalid token.' });
+    }
+
+    // Attach the decoded user information to the request for further processing
+    req.user = decoded.user;
+    next();
+  });
+};
+
+################################################
+// app/routes/authRoutes.js
+const express = require('express');
+const router = express.Router();
+const authController = require('../controllers/authController');
+
+// Define a route for user login and token generation
+router.post('/login', authController.login);
+
+module.exports = router;
+
+
+// app/routes/userRoutes.js
+const express = require('express');
+const router = express.Router();
+const userController = require('../controllers/userController');
+const authMiddleware = require('../middlewares/authMiddleware');
+
+// Define a route for user profile
+router.get('/profile', authMiddleware.authenticate, userController.getUserProfile);
+
+module.exports = router;
+
+
+
+
+// app/controllers/userController.js
+
+// Controller function to get the user's profile
+exports.getUserProfile = (req, res) => {
+  // Access the authenticated user information from req.user
+  const { username, email } = req.user;
+
+  // You can fetch the user's profile data from your database here
+  // For simplicity, we'll send back the user's username and email
+  res.json({ username, email });
+};
+
+
+
+
+
+// app/controllers/authController.js
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const User = require('../models/user'); // Assuming you have a User model
+
+// Controller function to handle user login and token generation
+exports.login = async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    // Check if the user exists (you would typically fetch the user from your database)
+    const user = await User.findOne({ username });
+
+    // If the user doesn't exist, respond with an error
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Compare the provided password with the hashed password in the database
+    const passwordMatch = await bcrypt.compare(password, user.password);
+
+    // If the passwords don't match, respond with an error
+    if (!passwordMatch) {
+      return res.status(401).json({ error: 'Incorrect password' });
+    }
+
+    // If the username and password are correct, generate a JWT token
+    const token = jwt.sign({ user: user.username }, 'your-secret-key', { expiresIn: '1h' });
+
+    res.json({ token });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'An error occurred during login' });
+  }
+};
