@@ -72,7 +72,7 @@ const userLogin = (req, res) => {
           console.log("Login successful");
           const jwtToken = jwt.sign({username : results[0].username}, "secretkey", {algorithm : 'HS256', expiresIn : '2 days'})
           console.log('jwt token ' , jwtToken);
-          res.status(200).json({ message: "Login successful" });
+          res.status(200).json({ accessToken: jwtToken });
         } else {
           console.log("Invalid username or password");
           res.status(401).json({ error: "Invalid username or password" });

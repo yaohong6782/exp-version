@@ -3,12 +3,16 @@ const express = require("express");
 const userRoutes = require("@src/routes/userRoutes")
 const postsRoutes = require("@src/routes/postsRoutes")
 
-// import { addAlias } from "module-alias";
+const swaggerUi = require('swagger-ui-express')
+const swaggerJsDoc = require('swagger-jsdoc')
+
+const cors = require("cors")
 
 
 const app = express();
 const PORT = process.env.PORT ?? 8000;
 
+app.use(cors())
 app.use(express.json());
 
 
