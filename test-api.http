@@ -1,0 +1,16 @@
+# @baseUrl= http://localhost:8000
+
+post {{baseUrl}}/users/userLogin
+Content-Type: application/json
+
+{
+    "username":"yh@email.com",
+    "password":"password"
+}
+
+###
+
+get {{baseUrl}}/posts/getAllPostsContent
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+# Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InloQGVtYWlsLmNvbSIsImlhdCI6MTcwMjE1Mzg1OCwiZXhwIjoxNzAyMzI2NjU4fQ.lDZbL-tsFrt0yWU6dJXJ8xQprQgtJJkCs6SuwYUPea0

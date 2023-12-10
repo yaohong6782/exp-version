@@ -1,12 +1,12 @@
 const mysql = require("mysql2");
 // import mysql from "mysql2";
-
+require('dotenv').config()
 
 const pool = mysql.createPool({
-  host: "localhost",
-  user: "root",
-  password: "password",
-  database: "track_express",
+  host: process.env.HOST,
+  user: process.env.DBUSER,
+  password: process.env.PASSWORD,
+  database: process.env.DATABASE,
   connectionLimit: 10,
 });
 

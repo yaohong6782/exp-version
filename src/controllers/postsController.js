@@ -12,7 +12,7 @@ const getAllPost = (req, res) => {
         console.log("Error retrieving data");
       }
 
-      console.log("Results ", results);
+    //   console.log("Results ", results);
       //   console.log("results id " , results[0].id)
 
       const formattedResults = results.map((result) => ({
@@ -84,40 +84,11 @@ const postNewQuestion = async (req, res) => {
     res.status(500).send("Error retrieving user information");
   }
 
-  //   pool.query(
-  //     "SELECT * FROM users WHERE username = ?",
-  //     [userName],
-  //     (error, results, fields) => {
-  //       if (error) {
-  //         console.log("Error executing the query:", error);
-  //       } else {
-  //         if (results.length > 0) {
-  //           // User found, process the results here
-  //           console.log("User found:", results);
-  //           const userId = results[0].id;
-  //           pool.query(
-  //             "INSERT INTO posts (question_title, content, user_id, question_url, question_number) VALUES (?, ?, ?, ?, ?)",
-  //             [questionTitle, content, userId, questionUrl, questionNumber],
-  //             (error, results, fields) => {
-  //               if (error) {
-  //                 console.log("Error inserting data into database ", error);
-  //                 return res.status(500).json({ error: "Database error" });
-  //               }
-
-  //               console.log("Successfully posted question");
-  //               res.status(200).json({
-  //                 message: `${questionTitle} have been successfully created`,
-  //               });
-  //             }
-  //           );
-  //         } else {
-  //           // No user found
-  //           console.log("No user found");
-  //         }
-  //       }
-  //     }
-  //   );
 };
+
+const getAllPostRespectiveToUser = (req, res) => {
+
+}
 
 module.exports = {
   getAllPost,
