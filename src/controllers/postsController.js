@@ -2,6 +2,9 @@ const { pool } = require("@src/database/db");
 const userQueries = require("@src/db-queries/usersQueries");
 const postQueries = require("@src/db-queries/postsQueries");
 
+const util= require('util');
+const poolQuery = util.promisify(pool.query).bind(pool);
+
 const getAllPost = (req, res) => {
   pool.query(
     // "SELECT * from posts JOIN " + "users where posts.user_id = users.id",
@@ -12,7 +15,7 @@ const getAllPost = (req, res) => {
         console.log("Error retrieving data");
       }
 
-    //   console.log("Results ", results);
+      //   console.log("Results ", results);
       //   console.log("results id " , results[0].id)
 
       const formattedResults = results.map((result) => ({
@@ -44,7 +47,6 @@ const postNewQuestion = async (req, res) => {
     const user = await userQueries.retrieveUserInfoFromUserName(userName);
     const userId = user[0].id;
 
-
     const insertPostQuery =
       "INSERT INTO posts (question_title, content, user_id, question_url, question_number) VALUES (?, ?, ?, ?, ?)";
 
@@ -62,35 +64,53 @@ const postNewQuestion = async (req, res) => {
           .status(200)
           .json({ message: `${questionTitle} successfully posted` });
       }
-    );  
-    
-    // call saveCreatedPosts here
-
-    // const message = await postQueries.saveCreatedPosts({
-    //   questionTitle,
-    //   content,
-    //   userId,
-    //   questionUrl,
-    //   questionNumber,
-    // });
-
-    // Respond to the client after saving the post
-    // res.status(201).json({
-    //   message: message,
-    // });
+    );
 
   } catch (error) {
     console.error(error);
     res.status(500).send("Error retrieving user information");
   }
-
 };
 
-const getAllPostRespectiveToUser = (req, res) => {
-
-}
+const getAllPostsRespectiveToUser = async (req, res) => {
+    try {
+      const { username } = req.body;
+      console.log("username ", username);
+  
+      // First query to get user ID
+      const userQueryResults = await poolQuery(
+        "SELECT users.id FROM users WHERE username = ?",
+        [username]
+      );
+  
+      if (userQueryResults.length === 0) {
+        return res.status(401).json({ error: "User not found" });
+      }
+  
+      const userId = userQueryResults[0].id;
+  
+      console.log("finding all posts by this user : ", userId);
+  
+      // Second query to get posts
+      const postsQueryResults = await poolQuery(
+        "SELECT p.*, u.* FROM posts p JOIN users u ON p.user_id = u.id WHERE p.user_id = ?",
+        [userId]
+      );
+  
+      if (postsQueryResults.length === 0) {
+        return res.status(401).json({ error: "No records found" });
+      }
+  
+  
+      return res.status(200).json({ message: postsQueryResults });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  };
 
 module.exports = {
   getAllPost,
   postNewQuestion,
+  getAllPostsRespectiveToUser,
 };
