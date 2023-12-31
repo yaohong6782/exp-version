@@ -50,6 +50,46 @@ const userRoutes = express.Router();
 userRoutes.post("/signUp", userController.signUp);
 
 
+
+/**
+ * @openapi
+ * /users/userLogin:
+ *   post:
+ *     description: User Sign Up
+ *     requestBody:
+ *       description: User details for sign up
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       '200':
+ *         description: Returns JWT token on successful login
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 accessToken:
+ *                   type: string
+ *                   example: "JWT Token"
+ *       '400':
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: "Invalid input data"
+ */
 userRoutes.post("/userLogin", userController.userLogin);
 
 
