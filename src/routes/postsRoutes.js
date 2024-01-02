@@ -7,7 +7,7 @@ const postsRoutes = express.Router();
 
 postsRoutes.get("/getAllPostsContent",  authenticateToken(["user", "admin"]) , postsController.getAllPost);
 
-postsRoutes.post("/postContent", authenticateToken(["user"]), postsController.postNewQuestion);
+postsRoutes.post("/postContent", authenticateToken(["user", "admin"]), postsController.postNewQuestion);
 
 postsRoutes.post("/getAllPostsRespectiveToUser", authenticateToken(["user"]), postsController.getAllPostsRespectiveToUser);
 

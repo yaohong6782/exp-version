@@ -74,7 +74,7 @@ const postNewQuestion = async (req, res) => {
 const getAllPostsRespectiveToUser = async (req, res) => {
   try {
     const { username } = req.body;
-    console.log("username ", username);
+    console.log("username for respective post", username);
 
     // First query to get user ID
     const userQueryResults = await poolQuery(
