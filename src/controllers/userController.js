@@ -70,7 +70,7 @@ const userLogin = (req, res) => {
 
         if (match) {
           console.log("Login successful");
-          const jwtToken = jwt.sign({username : results[0].username}, "secretkey", {algorithm : 'HS256', expiresIn : '2 days'})
+          const jwtToken = jwt.sign({username : results[0].username, role: results[0].role}, "secretkey", {algorithm : 'HS256', expiresIn : '2 days'})
           console.log('jwt token ' , jwtToken);
           res.status(200).json({ accessToken: jwtToken });
         } else {

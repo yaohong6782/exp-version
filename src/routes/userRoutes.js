@@ -8,7 +8,7 @@ const userRoutes = express.Router();
 
 
 /**
- * @openapi
+ * @swagger
  * /users/signUp:
  *   post:
  *     description: User Sign Up

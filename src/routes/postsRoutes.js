@@ -5,10 +5,10 @@ const postsController = require("@src/controllers/postsController")
 
 const postsRoutes = express.Router();
 
-postsRoutes.get("/getAllPostsContent",  authenticateToken , postsController.getAllPost);
+postsRoutes.get("/getAllPostsContent",  authenticateToken(["user", "admin"]) , postsController.getAllPost);
 
-postsRoutes.post("/postContent", authenticateToken, postsController.postNewQuestion);
+postsRoutes.post("/postContent", authenticateToken(["user"]), postsController.postNewQuestion);
 
-postsRoutes.post("/getAllPostsRespectiveToUser", authenticateToken, postsController.getAllPostsRespectiveToUser);
+postsRoutes.post("/getAllPostsRespectiveToUser", authenticateToken(["user"]), postsController.getAllPostsRespectiveToUser);
 
 module.exports = postsRoutes;

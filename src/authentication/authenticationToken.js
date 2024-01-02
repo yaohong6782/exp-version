@@ -1,7 +1,7 @@
 // import jwt from "jsonwebtoken";
 const jwt = require("jsonwebtoken");
 
-const authenticateToken = (req, res, next) => {
+const authenticateToken = (allowedRoles = []) => (req, res, next) => {
   const token = req.header("Authorization");
 
   if (!token) {
@@ -13,6 +13,13 @@ const authenticateToken = (req, res, next) => {
       return res.status(403).json({ error: "Unauthorized, invalid token" });
     }
     console.log("user ", user);
+    console.log("user role ", user.role)
+
+    // if allowedRoles does not contain these roles
+    // unauthorised access
+    if (!allowedRoles.includes(user.role)) {
+        return res.status(403).json({error : "Unauthorised role"})
+    }
     req.user = user;
     next();
   });
